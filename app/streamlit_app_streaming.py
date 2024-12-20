@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 from langchain.schema import AIMessage, HumanMessage
 from agent.chatbot import generate_response
 from utils.tts import text_to_speech_aws
+import base64  # Import base64 for encoding audio
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -32,6 +33,7 @@ st.markdown("""
             margin-bottom: 20px;
         }
 
+        /* Chat Container */
         .chat-container {
             max-height: 60vh;
             overflow-y: auto;
@@ -42,6 +44,7 @@ st.markdown("""
             margin-bottom: 20px;
         }
 
+        /* User Message Styling */
         .user {
             background-color: #cce5ff;
             padding: 10px;
@@ -51,6 +54,7 @@ st.markdown("""
             max-width: 80%;
         }
 
+        /* Assistant Message Styling */
         .assistant {
             background-color: #d4edda;
             padding: 10px;
@@ -60,15 +64,51 @@ st.markdown("""
             max-width: 80%;
         }
 
+        /* Error Message Styling */
         .error {
             color: red;
             font-weight: bold;
         }
+
+        /* Sidebar Title */
+        .sidebar-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* Button Styling */
+        .stButton > button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        /* Start Listening Button */
+        #start-listening {
+            background-color: #28a745;
+            color: white;
+        }
+
+        /* Stop Listening Button */
+        #stop-listening {
+            background-color: #dc3545;
+            color: white;
+        }
+
     </style>
 """, unsafe_allow_html=True)
 
 # ---- Title ----
 st.markdown('<div class="title">🎙️ Voice Assistant with Real-Time AWS Transcription</div>', unsafe_allow_html=True)
+
+# ---- Sidebar Settings ----
+st.sidebar.markdown('<div class="sidebar-title">⚙️ Settings</div>', unsafe_allow_html=True)
+language_option = st.sidebar.radio("🌍 Choose language:", ["Auto Detect", "English", "Arabic"])
+language = "en" if language_option == "English" else "ar" if language_option == "Arabic" else None
 
 if 'chat_history' not in st.session_state:
     st.session_state.chat_history = []
@@ -82,6 +122,11 @@ if 'current_partial' not in st.session_state:
 if 'last_speech_time' not in st.session_state:
     st.session_state.last_speech_time = None
 
+if st.sidebar.button("🗑️ Clear Chat / New Session"):
+    st.session_state.chat_history = []
+    st.session_state.last_audio_bytes = None
+    st.rerun()
+
 # ---- Display Chat History ----
 chat_container = st.container()
 with chat_container:
@@ -93,6 +138,15 @@ with chat_container:
             unsafe_allow_html=True
         )
     st.markdown('</div>', unsafe_allow_html=True)
+
+# ---- Control Buttons ----
+button_container = st.container()
+with button_container:
+    cols = st.columns(2)
+    with cols[0]:
+        start_button = st.button("Start Listening", key="start-listening", help="Start real-time transcription and assistant responses")
+    with cols[1]:
+        stop_button = st.button("Stop Listening", key="stop-listening", help="Stop transcription and assistant responses")
 
 # ---- AWS Transcribe Real-Time Code ----
 class MyEventHandler(TranscriptResultStreamHandler):
@@ -122,30 +176,46 @@ class MyEventHandler(TranscriptResultStreamHandler):
                                 unsafe_allow_html=True
                             )
 
+                        # Prepare LangChain History
+                        langchain_history = []
+                        for msg in st.session_state.chat_history:
+                            if msg["role"] == "user":
+                                langchain_history.append(HumanMessage(content=msg["content"]))
+                            elif msg["role"] == "assistant":
+                                langchain_history.append(AIMessage(content=msg["content"]))
+
                         # Generate Assistant Response
-                        await self.generate_response(final_text)
+                        bot_response, intermediate_steps = generate_response(langchain_history)
+                        if not bot_response:
+                            with self.chat_container:
+                                st.markdown(
+                                    '<div class="error">❌ Failed to generate a response. Please try again.</div>',
+                                    unsafe_allow_html=True
+                                )
+                            continue
 
-    async def generate_response(self, final_text):
-        langchain_history = [
-            HumanMessage(content=msg["content"]) if msg["role"] == "user" else AIMessage(content=msg["content"])
-            for msg in st.session_state.chat_history
-        ]
-        langchain_history.append(HumanMessage(content=final_text))
+                        # Update chat history with assistant response
+                        st.session_state.chat_history.append({"role": "assistant", "content": bot_response})
 
-        bot_response, intermediate_steps = generate_response(langchain_history)
-        st.session_state.chat_history.append({"role": "assistant", "content": bot_response})
+                        # Display Assistant Response
+                        with self.chat_container:
+                            st.markdown(
+                                f'<div class="assistant"><b>🤖 Assistant:</b> {bot_response}</div>',
+                                unsafe_allow_html=True
+                            )
 
-        # Display Assistant Response
-        with self.chat_container:
-            st.markdown(
-                f'<div class="assistant"><b>🤖 Assistant:</b> {bot_response}</div>',
-                unsafe_allow_html=True
-            )
-
-        # Generate Audio Response
-        audio_file = text_to_speech_aws(bot_response, language="en")
-        if audio_file:
-            st.audio(audio_file, format="audio/mp3")
+                        # Generate Audio Response
+                        audio_bytes = text_to_speech_aws(bot_response, language)
+                        if audio_bytes:
+                            # Encode audio to base64
+                            audio_base64 = base64.b64encode(audio_bytes).decode()
+                            # Embed audio in HTML with autoplay and no controls
+                            audio_html = f"""
+                            <audio autoplay>
+                                <source src="data:audio/mp3;base64,{audio_base64}" type="audio/mp3">
+                            </audio>
+                            """
+                            st.markdown(audio_html, unsafe_allow_html=True)
 
 async def mic_stream(input_queue):
     loop = asyncio.get_event_loop()
@@ -173,7 +243,7 @@ async def write_chunks(stream, input_queue):
 async def basic_transcribe(chat_container):
     client = TranscribeStreamingClient(region="us-west-2")
     stream = await client.start_stream_transcription(
-        language_code="en-US",
+        language_code="en-US" if language_option == "English" else "ar-SA",
         media_sample_rate_hz=16000,
         media_encoding="pcm",
     )
@@ -194,10 +264,7 @@ def run_transcription():
     loop.run_until_complete(basic_transcribe(chat_container))
     loop.close()
 
-# ---- Control Buttons ----
-start_button = st.button("Start Listening")
-stop_button = st.button("Stop Listening")
-
+# ---- Start and Stop Listening Logic ----
 if start_button and not st.session_state.transcription_started:
     st.session_state.transcription_started = True
     with st.spinner("🎙️ Listening... Speak now!"):

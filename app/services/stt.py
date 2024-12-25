@@ -15,7 +15,7 @@ from core.config import settings
 from deepgram import (DeepgramClient, DeepgramClientOptions, FileSource,
                       PrerecordedOptions)
 from deepgram.utils import verboselogs
-from services.whisper_streaming.whisper_online import (FasterWhisperASR,
+from services.whisper_streaming_repo.whisper_online import (FasterWhisperASR,
                                                        VACOnlineASRProcessor)
 
 from utils.logger import get_logger

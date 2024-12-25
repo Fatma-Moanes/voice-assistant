@@ -1,0 +1,62 @@
+logging:
+    level: "INFO"
+    format: "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+
+
+speech_to_text:
+    transcriber: "WhisperStreaming"  # "WhisperStreaming" or "AWSStreaming"
+
+    prerecorded:
+        Deepgram:
+            model: "whisper"
+            languages:
+                english_code: &english_code_deepgram "en"
+                arabic_code: &arabic_code_deepgram "ar"   
+
+    streaming:
+        FasterWhisperASR:
+            model_size: "small"
+            sample_rate: 16000
+            device: "cpu"
+            use_vad: True    # Use voice activity detection to reduce the amount of audio sent to the ASR model
+            silence_timeout: 5  # Time to wait before considering a sentence complete (in seconds)
+            languages:
+                english_code: *english_code_deepgram
+                arabic_code: *arabic_code_deepgram
+
+        AWS:
+            region: &region "eu-west-1"
+            sample_rate: 16000
+            languages:
+                english_code: &english_code "en-US"
+                arabic_code: &arabic_code "ar-SA"        
+  
+
+llm:
+    llm_provider: "groq"  # "groq" or "openai"
+
+    groq:
+        model: 'llama3-8b-8192' #'llama-3.3-70b-versatile' # 'llama3-8b-8192'  # "mixtral-8x7b-32768"
+        temperature: 0
+        max_tokens: null
+        timeout: null
+        num_history_turns: 4
+
+    openai:
+        model: "gpt-4o"
+        temperature: 0
+        num_history_turns: 4
+
+
+
+text_to_speech:
+    AWS:
+        region: *region
+        # Select voice based on language
+        # 'Joanna' is a common English voice, 'Zeina' is an Arabic voice.
+        voice_id_ar: "Zeina"
+        voice_id_en: "Joanna"
+        voice_id_other: "Joanna"
+        languages:
+            english_code: *english_code
+            arabic_code: *arabic_code

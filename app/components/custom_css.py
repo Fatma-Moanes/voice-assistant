@@ -1,7 +1,9 @@
 import streamlit as st
 
+
 def apply_custom_css():
     """Inject custom CSS for the Streamlit app."""
+
     st.markdown("""
     <style>
         body {
@@ -86,4 +88,25 @@ def apply_custom_css():
         }
 
     </style>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
+
+    # Additional CSS snippet to create a "fake" right sidebar container
+    # We'll insert an empty <div> and position it on the right if debug mode is on.
+    st.markdown("""
+    <style>
+    /* Our custom right-sidebar container */
+    #debug-right-sidebar {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 350px;            /* Adjust width as desired */
+        height: 100%;
+        padding: 15px;
+        background-color: #f9f9f9;
+        border-left: 1px solid #ccc;
+        overflow-y: auto;
+        z-index: 9999;
+        display: none;           /* We'll show/hide via script depending on debug mode */
+    }
+    </style>
+    """, unsafe_allow_html=True)

@@ -1,11 +1,14 @@
-import logging
 import streamlit as st
 from agent.chatbot import generate_response
 from langchain.schema import AIMessage, HumanMessage
-from utils.tts import text_to_speech_aws
-from utils.stt import TranscriberFactory
+from services.tts import text_to_speech_aws
 
-logger = logging.getLogger(__name__)
+from services.stt import TranscriberFactory
+
+from utils.logger import get_logger
+
+logger = get_logger()
+
 
 # ---- Custom CSS and Layout ----
 st.markdown("""

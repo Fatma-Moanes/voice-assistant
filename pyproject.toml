@@ -1,0 +1,48 @@
+[tool.poetry]
+name = "voice assistant"
+version = "0.1.0"
+description = ""
+authors = ["Fatma-Moanes <fmoanesnoureldin@gmail.com>"]
+readme = "README.md"
+# write the package name here
+packages = [
+    { include = "app" }
+]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+python-dotenv = "^1.0.0"
+pymongo = "^4.8.0"
+pydantic-settings = "^2.4.0"
+boto3 = "^1.35.82"
+transformers = "^4.47.0"
+amazon-transcribe = "^0.6.2"
+langchain = "^0.3.12"
+langchain-groq = "^0.2.1"
+langchain-openai = "^0.2.14"
+langgraph = "^0.2.59"
+motor = "^3.6.0"
+audio-recorder-streamlit = "^0.0.10"
+streamlit-float = "^0.3.5"
+streamlit-mic-recorder = "^0.0.8"
+streamlit-webrtc = "^0.47.9"
+deepgram-sdk = "^3.7.7"
+librosa = "^0.10.2.post1"
+streamlit = "1.30.0"
+sounddevice = "^0.5.1"
+soundfile = "^0.12.1"
+torch = "^2.5.1"
+torchaudio = "^2.5.1"
+torchvision = {version = "^0.20.1+cu118", source = "pytorch-gpu-src"}
+faster-whisper = "^1.1.0"
+
+[[tool.poetry.source]]
+name = "pytorch-gpu-src"
+url = "https://download.pytorch.org/whl/cu118"
+priority = "explicit"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+

@@ -51,7 +51,7 @@
 - **Database**: MongoDB
 - **LLM**: [GROQ](https://www.groq.com/) or [OpenAI GPT](https://openai.com/)
 - **Speech Processing**:
-  - **Whisper** [WhisperStreaming](https://github.com/ufal/whisper_streaming) (Whisper)
+  - **Whisper** [WhisperStreaming](https://github.com/ufal/whisper_streaming)
   - AWS Transcribe
   - Deepgram (prerecorded audio)
 - **Text-to-Speech**: AWS Polly

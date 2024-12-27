@@ -1,60 +1,66 @@
 # Voice Assistant for FM-Clinic
 
-A **voice-enabled AI assistant** for booking doctor appointments seamlessly. This project leverages advanced **speech-to-text**, **text-to-speech**, and **large language models (LLMs)** to provide an intuitive and efficient interaction experience.
+🎙️ A *bilingual, AI-powered voice assistant** designed to simplify doctor appointment bookings at FM-Clinic. This solution combines **speech-to-text (STT)**, **text-to-speech (TTS)**, and **large language models (LLMs)** to deliver intuitive and efficient interactions.
+
 
 ---
 
-## 🌟 Features
+## 🌟 Key Features
 
-- **Speech-to-Text (STT):**
-  - Supports **Whisper Streaming** and **AWS Transcribe** for real-time transcription.
-  - Optional **Deepgram** integration for prerecorded audio.
-  - Multilingual support: **English** and **Arabic**.
-  - Real-time partial transcription display.
+### 🗣️ Speech-to-Text (STT)
+- **Real-Time Transcription**:
+  - Powered by **Whisper Streaming** and **AWS Transcribe**.
+  - Supports **Deepgram** for prerecorded audio files.
+  - Multilingual capability: **English** and **Arabic**.
+  - Real-time **partial transcription** for better interactivity.
+  
+### 🔊 Text-to-Speech (TTS)
+- Natural voice responses using **AWS Polly**.
+- Supports high-quality voices for both **English** and **Arabic**.
 
-- **Text-to-Speech (TTS):**
-  - Uses **AWS Polly** for natural-sounding responses in **English** and **Arabic**.
-  - Automatically detects language from the user's speech.
+### 🤖 AI-Powered Conversations
+- **Context-Aware Dialogues**:
+    A ReAct LLM agent that can:
+  - Collect patient details like name, age, and insurance status.
+  - Suggest available clinic locations and doctor specialties.
+  - Schedule and book appointments with MongoDB integration.
+- Powered by **GROQ** or **OpenAI GPT**, offering flexible LLM backends.
 
-- **AI-Powered Conversation:**
-  - Powered by **GROQ** and **OpenAI** for natural, contextual conversations.
-  - Handles complex interactions like:
-    - Collecting patient details.
-    - Providing clinic locations and doctor specialties.
-    - Suggesting and booking appointments.
+### 🎨 Intuitive User Interface
+- Built with **Streamlit** for a clean and responsive design.
+- Sidebar for language selection and session management.
+- Real-time chat display with user-friendly message bubbles.
+- **Debug Mode**:
+  - View intermediate tool outputs and chat history.
+  - Separate debug panel for tracing.
 
-- **Customizable UI:**
-  - Built with **Streamlit**.
-  - Beautiful, responsive, and intuitive interface.
-  - Sidebar for configuration (language selection, session management).
-  - Debug mode to view intermediate steps and tool usage.
-
-- **Extensible Tools:**
-  - Integration with MongoDB to manage:
-    - Patients.
-    - Doctors and their schedules.
-    - Appointments.
+### 📊 Data Integration
+- **MongoDB** as the database for managing:
+  - Patient records.
+  - Doctor information (schedules, specialties, locations).
+  - Appointment bookings.
+- Ready-to-use database seeding script with dummy data for testing.
 
 ---
 
 ## 🛠️ Tech Stack
 
-### Core Technologies
+### Core Components
 - **Frontend**: [Streamlit](https://streamlit.io/)
 - **Backend**: Python
 - **Database**: MongoDB
-- **LLM**: [GROQ](https://www.groq.com/) and [OpenAI GPT](https://openai.com/)
+- **LLM**: [GROQ](https://www.groq.com/) or [OpenAI GPT](https://openai.com/)
 - **Speech Processing**:
-  - Whisper (via [FasterWhisperASR](https://github.com/ufal/whisper_streaming))
+  - **Whisper** [WhisperStreaming](https://github.com/ufal/whisper_streaming) (Whisper)
   - AWS Transcribe
   - Deepgram (prerecorded audio)
 - **Text-to-Speech**: AWS Polly
 
-### Libraries & Frameworks
-- **LangChain**: Manages conversation flows and tool integrations.
-- **LangSmith**: Manages tracing and debugging for LLMs.
-- **Boto3**: AWS SDK for Python.
-- **Librosa** & **SoundDevice**: For audio processing.
+### Libraries & Tools
+- **LangChain**: Manages LLM conversation workflows and tools.
+- **LangSmith**: For tracing and debugging LLMs.
+- **Boto3**: AWS SDK for Polly and Transcribe integrations.
+- **Librosa** & **SoundDevice**: Audio handling and preprocessing.
 - **Pymongo**: MongoDB integration.
 
 ---
@@ -63,52 +69,88 @@ A **voice-enabled AI assistant** for booking doctor appointments seamlessly. Thi
 
 ### Prerequisites
 1. **Python 3.10+**
-2. **MongoDB** (Ensure you have a running instance)
-3. **AWS Polly and Transcribe** credentials.
-4. **GROQ** or **OpenAI API keys**.
-5. **Deepgram API Key** (optional, for prerecorded audio).
+2. **MongoDB** (Ensure it’s running locally or on the cloud).
+3. **API Keys**:
+   - **AWS Polly & Transcribe** (or use Whisper Streaming).
+   - **GROQ** or **OpenAI**
+   - **Deepgram** (optional for prerecorded audio).
+
+---
 
 ### Installation
-1. **Clone the repository:**
+
+1. **Clone the Repository**:
    ```bash
    git clone https://github.com/Fatma-Moanes/voice-assistant.git
    cd voice-assistant
    ```
 
-2. **Install dependencies with Poetry:**
+2. **Install Dependencies**:
    ```bash
    poetry install
    ```
 
-3. **Set up environment variables:**
-   - Copy `.env.example` to `.env`.
-   - Fill in your API keys and MongoDB credentials.
+3. **Set Up Environment Variables**:
+   - Copy `.env.example` to `.env`:
+     ```bash
+     cp .env.example .env
+     ```
+   - Fill in your API keys and database credentials in the `.env` file.
 
-4. **Create and seed the database:**
+4. **Seed the Database**:
+   Populate the database with dummy data:
    ```bash
    python utils/create_db.py
    ```
 
-5. **Run the application:**
+5. **Run the Application**:
+   Start the Streamlit app for live audio:
    ```bash
    poetry run streamlit run app/streamlit_app_streaming.py
    ```
 
 ---
 
-## 🧰 Configuration
+## 🎨 UI Overview
 
-All configurations are managed in `config.yml`. Key sections include:
-- **Speech-to-Text**: Configure STT models (`WhisperStreaming`, `AWSStreaming`).
-- **LLM**: Choose between **GROQ** and **OpenAI**.
-- **Text-to-Speech**: Configure AWS Polly voices and languages.
+### Chat Interface
+- **Dynamic Conversation**: User and assistant messages are displayed in visually distinct bubbles.
+- **Audio Input**:
+  - Live microphone recording.
+- **Error Handling**:
+  - Clear notifications for failed transcription or processing.
+
+### Sidebar Settings
+- **Language Selection**:
+  - Choose between **English**, **Arabic**, or **Auto Detect**.
+- **Session Controls**:
+  - Clear chat history.
+  - Toggle Debug Mode.
+
+### Debug Panel
+- Real-time insight into:
+  - Chat history used by the LLM.
+  - Intermediate tool calls and responses.
 
 ---
 
-## 🌐 API Keys and Environment Variables
+## 🧰 Configuration
 
-Set the following in your `.env` file:
-NOTE: You can use the `.env.example` file as a template.
+All application settings are managed through:
+1. **`config.yml`**:
+   - **Speech-to-Text** model selection (`WhisperStreaming`, `AWSStreaming`, or `Deepgram`).
+   - Language preferences and model-specific configurations.
+   - **Text-to-Speech** (AWS Polly voices and region).
+   - **LLM** provider (GROQ or OpenAI).
+
+2. **`.env`**:
+   - Store sensitive credentials such as API keys and database connection strings.  Use `.env.example` as a template.
+
+---
+
+## 🌐 Environment Variables
+
+Below is a summary of required `.env` variables:
 
 ```dotenv
 # MongoDB
@@ -131,36 +173,37 @@ DEEPGRAM_API_KEY="your_deepgram_api_key"
 
 ---
 
-## 🎨 UI Features
+## ✅ Completed Milestones
 
-- **Interactive Chat Display**:
-  - Chat bubbles for user and assistant messages.
-  - Separate sections for error messages and debug information.
-
-- **Audio Recording**:
-  - Supports real-time and prerecorded audio inputs.
-  - Partial transcription visible during recording.
-
+- **Speech-to-Text Enhancements**:
+  - Real-time and partial transcription.
+  - Improved error handling for silent inputs.
+- **Streamlined Conversations**:
+  - Context-aware doctor booking logic.
+  - Integration with MongoDB for data persistence.
 - **Debug Mode**:
   - Displays:
     - Intermediate steps (tool calls).
     - Processed chat history used by the AI agent.
+- **Extensible Configuration**:
+  - Support for multiple STT and LLM models.
+
 
 ---
 
-## ✨ Completed Milestones
+## ✨ Acknowledgments
 
-- [x] Error handling for empty transcription.
-- [x] Streamlined UI/UX improvements.
-- [x] Language-specific transcription and response.
-- [x] Streaming input and output.
-- [x] Configurable STT and LLM integrations.
-- [x] Debug mode for the LLM.
-- [x] LangSmith Tracing.
+- **LangChain** for managing LLM integrations.
+- **Amazon Polly** for high-quality voice synthesis.
+- **Whisper Streaming** and **Deepgram** for advanced transcription.
+- **Streamlit** for the responsive and interactive UI.
+- **GROQ** and **OpenAI GPT** for powering the conversational AI.
 
 ---
 
+## 💬 Support
 
-## 🙋‍♂️ Support
+If you have any questions or encounter issues, feel free to open an [issue](https://github.com/Fatma-Moanes/voice-assistant/issues) or reach out via email at fmoanesnoureldin@gmail.com
 
-If you encounter issues, please open an [issue](https://github.com/Fatma-Moanes/voice-assistant/issues)
+---
+Enjoy using the **Voice Assistant for FM-Clinic**! 🚀

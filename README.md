@@ -1,6 +1,6 @@
-# Voice Assistant for FM-Clinic
+# Voice Assistant for a Clinic
 
-🎙️ A *bilingual, AI-powered voice assistant** designed to simplify doctor appointment bookings at FM-Clinic. This solution combines **speech-to-text (STT)**, **text-to-speech (TTS)**, and **large language models (LLMs)** to deliver intuitive and efficient interactions.
+🎙️ A *bilingual, AI-powered voice assistant** designed to simplify doctor appointment bookings at a Clinic. This solution combines **speech-to-text (STT)**, **text-to-speech (TTS)**, and **large language models (LLMs)** to deliver intuitive and efficient interactions.
 
 
 ---

@@ -2,6 +2,7 @@
 
 🎙️ A *bilingual, AI-powered voice assistant** designed to simplify doctor appointment bookings at a Clinic. This solution combines **speech-to-text (STT)**, **text-to-speech (TTS)**, and **large language models (LLMs)** to deliver intuitive and efficient interactions.
 
+![Screenshot from 2025-01-07 00-25-22](https://github.com/user-attachments/assets/e8f27261-bf9e-4fe0-8354-6e1a7f6b3799)
 
 ---
 
